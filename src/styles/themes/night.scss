@@ -1,0 +1,45 @@
+.app.night {
+
+  // 🔘 КНОПКА
+  .forecast-btn {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  // 🟦 НЕАКТИВНА КАРТКА
+  .card {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+
+    border: 1px solid;
+    border-image: linear-gradient(
+      180deg,
+      #ffffff,
+      #3a3a3a
+    ) 1;
+
+    backdrop-filter: blur(16px);
+  }
+
+  // ⭐ АКТИВНА
+  .card.active {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.13) 100%
+    );
+
+    border: 2px solid;
+    border-image: linear-gradient(
+      180deg,
+      #ffffff,
+      #3a3a3a
+    ) 1;
+
+    backdrop-filter: blur(20px);
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+}
