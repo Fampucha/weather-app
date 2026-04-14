@@ -7,6 +7,7 @@ import { getWeatherType } from './utils/getWeatherType'
 import { isDayTime } from './utils/isDay'
 
 import { getForecast } from "./services/weatherService";
+import HourlyForecast from "./components/weather/HourlyForecast";
 
 
 function App() {
@@ -14,7 +15,6 @@ function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [activeDay, setActiveDay] = useState(0);
   const [activeHourIndex, setActiveHourIndex] = useState(0);
-  const [activeHour, setActiveHour] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,7 +25,7 @@ function App() {
       try {
         setLoading(true);
 
-        const data = await getForecast("Kyiv");
+        const data = await getForecast("Poltava");
 
         console.log(data); //!
         setWeatherData(data);
@@ -60,8 +60,36 @@ function App() {
     setActiveHourIndex(0);
   }, [activeDay]);
 
+  //! Отримуємо activeWeather
+  const activeWeather = useMemo(() => {
+    if (!days.length) return null;
+
+    return days[activeDay]?.[activeHourIndex];
+  }, [days, activeDay, activeHourIndex]); 
+
+  //! Витягуємо weather type
+  const weatherMain = activeWeather?.weather?.[0]?.main;
+  const weatherDescription = activeWeather?.weather?.[0]?.description;
+
+  //! Отримуємо theme
+  const theme = useMemo(() => {
+    if (!weatherMain) return null;
+
+    const type = getWeatherType(weatherMain, weatherDescription);
+    return weatherThemes[type];
+  }, [weatherMain, weatherDescription]);
+
   return (
-    <div>
+    <div
+    style={{
+      minHeight: "100vh",
+      background: theme
+        ? `url(${theme?.day?.background}) center/cover no-repeat`
+        : "#000",
+      color: "#fff",
+      transition: "0.3s"
+    }}
+    >
       {loading && <p>Loading...</p>}
       {error && <p>Щось пішло не так 😢</p>}
 
@@ -90,33 +118,21 @@ function App() {
           </div>
 
           {/* 🔥 ГОДИНИ ОБРАНОГО ДНЯ */}
-          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-            {days[activeDay]?.map((item, index) => {
-              const hour = new Date(item.dt * 1000).getHours();
+          <HourlyForecast
+            hours={days[activeDay]}
+            activeHourIndex={activeHourIndex}
+            setActiveHourIndex={setActiveHourIndex}
+          />
 
-              return (
-                <button
-                  key={index}
-                  onClick={() => setActiveHourIndex(index)}
-                  style={{
-                    background:
-                      activeHourIndex === index ? "#1f2937" : "#e5e7eb",
-                    color: activeHourIndex === index ? "#fff" : "#000",
-                    padding: "8px"
-                  }}
-                >
-                  {hour}:00
-                </button>
-              );
-            })}
-          </div>
+          <h1>
+            {theme?.label || weatherMain}
+          </h1>
 
           {/* 🔥 ПОГОДА */}
           <div style={{ marginTop: 20 }}>
             {days[activeDay]?.[activeHourIndex] && (
               <h3>
-                Температура:{" "}
-                {days[activeDay][activeHourIndex].main.temp}°C
+                Температура: {activeWeather?.main?.temp}°C
               </h3>
             )}
           </div>
