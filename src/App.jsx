@@ -1,13 +1,14 @@
 import { useEffect, useState, useMemo } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from './assets/vite.svg'
+// import heroImg from './assets/hero.png'
 import { weatherThemes } from './constants/weatherThemes'
 import { getWeatherType } from './utils/getWeatherType'
 import { isDayTime } from './utils/isDay'
 
 import { getForecast } from "./services/weatherService";
 import HourlyForecast from "./components/weather/HourlyForecast";
+import Sidebar from "./components/weather/Sidebar";
 
 
 function App() {
@@ -76,15 +77,29 @@ function App() {
     if (!weatherMain) return null;
 
     const type = getWeatherType(weatherMain, weatherDescription);
-    return weatherThemes[type];
+    return weatherThemes[type] || weatherThemes.clear;
   }, [weatherMain, weatherDescription]);
+
+  //! визначення дня та ночі
+  const isDay = useMemo(() => {
+    if (!activeWeather || !weatherData?.city?.timezone) return true;
+
+    return isDayTime(activeWeather.dt, weatherData.city.timezone);
+  }, [activeWeather, weatherData]);
+
+  //! єдиним джерелом для UI
+  const currentHourData = useMemo(() => {
+    if (!days.length) return null;
+
+    return days[activeDay]?.[activeHourIndex];
+  }, [days, activeDay, activeHourIndex]);
 
   return (
     <div
     style={{
       minHeight: "100vh",
       background: theme
-        ? `url(${theme?.day?.background}) center/cover no-repeat`
+        ? `url(${theme[isDay ? 'day' : 'night']?.background}) center/cover no-repeat`
         : "#000",
       color: "#fff",
       transition: "0.3s"
@@ -95,46 +110,48 @@ function App() {
 
       {!loading && weatherData && days.length > 0 && (
         <>
-          <h2>Місто: {weatherData.city.name}</h2>
+          <div style={{ display: "flex", gap: 20 }}>
 
-          <div style={{ display: "flex", gap: 10 }}>
-            {days.map((day, index) => {
-              const date = new Date(day[0].dt * 1000);
+            <div style={{ flex: 1 }}>
+              {/* <h2>Місто: {weatherData.city.name}</h2> */}
 
-              return (
-                <button
-                  key={index}
-                  onClick={() => setActiveDay(index)}
-                  style={{
-                    background: activeDay === index ? "#111" : "#ddd",
-                    color: activeDay === index ? "#fff" : "#000",
-                    padding: "8px"
-                  }}
-                >
-                  {date.toDateString()}
-                </button>
-              );
-            })}
-          </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                {days.map((day, index) => {
+                  const date = new Date(day[0].dt * 1000);
 
-          {/* 🔥 ГОДИНИ ОБРАНОГО ДНЯ */}
-          <HourlyForecast
-            hours={days[activeDay]}
-            activeHourIndex={activeHourIndex}
-            setActiveHourIndex={setActiveHourIndex}
-          />
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setActiveDay(index)}
+                      style={{
+                        background: activeDay === index ? "#111" : "#ddd",
+                        color: activeDay === index ? "#fff" : "#000",
+                        padding: "8px"
+                      }}
+                    >
+                      {date.toDateString()}
+                    </button>
+                  );
+                })}
+              </div>
 
-          <h1>
-            {theme?.label || weatherMain}
-          </h1>
+              <h1>
+                {theme?.label || weatherMain}
+              </h1>
 
-          {/* 🔥 ПОГОДА */}
-          <div style={{ marginTop: 20 }}>
-            {days[activeDay]?.[activeHourIndex] && (
-              <h3>
-                Температура: {activeWeather?.main?.temp}°C
-              </h3>
-            )}
+              {/* 🔥 ГОДИНИ ОБРАНОГО ДНЯ */}
+              <HourlyForecast
+                hours={days[activeDay]}
+                activeHourIndex={activeHourIndex}
+                setActiveHourIndex={setActiveHourIndex}
+              />
+            </div>
+
+            {/* 🔥 SIDEBAR */}
+            <Sidebar
+              city={weatherData.city.name}
+              data={currentHourData}
+            />
           </div>
         </>
       )}
