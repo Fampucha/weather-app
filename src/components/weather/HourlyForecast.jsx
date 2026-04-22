@@ -5,18 +5,18 @@ function HourlyForecast({
   activeHourIndex,
   setActiveHourIndex,
 }) {
-  if (!hours) return null;
+  if (!hours?.length) return null;
 
   return (
     <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
         {hours.map((item, index) => {
-            const hour = new Date(item.time).getHours();
+            const hour = new Date(item.time).toLocaleTimeString([], { hour: "2-digit" });
 
             const isActive = index === activeHourIndex;
 
             return (
                 <div
-                    key={index}
+                    key={item.time_epoch}
                     onClick={() => setActiveHourIndex(index)}
                     style={{
                         padding: "10px",
