@@ -10,7 +10,7 @@ function HourlyForecast({
   return (
     <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
         {hours.map((item, index) => {
-            const hour = new Date(item.dt * 1000).getHours();
+            const hour = new Date(item.time).getHours();
 
             const isActive = index === activeHourIndex;
 
@@ -28,7 +28,7 @@ function HourlyForecast({
                     }}
                 >
                     <p>{hour}:00</p>
-                    <p>{Math.round(item.main.temp)}°C</p>
+                    <p>{Math.round(item.temp_c)}°C</p>
                 </div>
             );
         })}
