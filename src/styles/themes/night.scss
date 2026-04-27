@@ -2,44 +2,92 @@
 
   // 🔘 КНОПКА
   .forecast-btn {
+    background: transparent;
+  }
+
+  .forecast-btn--active {
     background: rgba(0, 0, 0, 0.15);
   }
 
   // 🟦 НЕАКТИВНА КАРТКА
   .card {
+    position: relative;
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.15) 0%,
       rgba(255, 255, 255, 0.03) 100%
     );
 
-    border: 1px solid;
-    border-image: linear-gradient(
-      180deg,
-      #ffffff,
-      #3a3a3a
-    ) 1;
-
+    border: 1px solid transparent;
     backdrop-filter: blur(16px);
-  }
 
-  // ⭐ АКТИВНА
-  .card.active {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.25) 0%,
-      rgba(255, 255, 255, 0.13) 100%
-    );
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
 
-    border: 2px solid;
-    border-image: linear-gradient(
-      180deg,
-      #ffffff,
-      #3a3a3a
-    ) 1;
+      background: linear-gradient(
+        180deg,
+        #ffffff,
+        #3a3a3a
+      );
+      opacity: 0.2;
 
-    backdrop-filter: blur(20px);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    &:hover {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.20) 0%,
+        rgba(255, 255, 255, 0.08) 100%
+      );
+      backdrop-filter: blur(17px);
+    }
+
+    &--active {
+      position: relative;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.13) 100%
+      );
+
+      backdrop-filter: blur(20px);
+
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    &--active::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2px;
+
+      background: linear-gradient(
+        180deg,
+        #ffffff,
+        #3a3a3a
+      );
+        
+      opacity: 0.25;
+
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
   }
 }

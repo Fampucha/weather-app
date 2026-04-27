@@ -1,8 +1,142 @@
-.card {
-  border-radius: 20px;
-  padding: 16px;
-  transition: 0.3s;
+.hourly-forecast {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  padding-bottom: 10px;
+  padding-top: 31px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.28) transparent;
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  .hour-item__card {
+    padding: 12px;
+    border-radius: 6px;
+     box-sizing: border-box;
+    transition: 0.25s ease;
+
+    &--active {
+      transform: scale(1.05);
+    }
+
+    .hour-item__time {
+      margin: 0;
+      padding-bottom: 3px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .hour-item__divider {
+      display: block;
+      height: 1px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.13);
+    }
+
+    .hour-item__icon-wrap {
+      width: 45px;
+      height: 45px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+
+      .hour-item__icon {
+        width: 27px;
+        height: 27px;
+      }
+    }
+
+    .hour-item__temp {
+      margin: 0;
+      padding-top: 2px;
+      font-size: 18px;
+      text-align: center;
+    }
+  }
+}
+
+.daily-list {
+  width: 100%;
+
+  .day-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 20px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+
+    &[data-active="true"] {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 6px;
+    }
+
+    .day-item__icon-wrap {
+      width: 45px;
+      height: 45px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .day-item__icon {
+        width: 27px;
+        height: 27px;
+      }
+    }
+
+    .day-item__info {
+      flex: 1;
+      text-align: left;
+
+      .day-item__date {
+        margin: 0 0 5px;
+        font-weight: 500;
+      }
+
+      .day-item__desc {
+        margin: 0;
+        opacity: 0.4;
+        font-size: 14px;
+      }
+    }
+
+    .day-item__divider {
+      display: block;
+      height: 36px;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 1px 0 0 rgba(255,255,255,0.13);
+    }
+
+    .day-item__temp {
+      margin-left: 0;
+      width: 20px;
+      flex-shrink: 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .day-item__temp-min {
+        margin: 0 0 5px;
+      }
+
+      .day-item__temp-max {
+        margin: 0;
+        opacity: 0.7;
+      }
+    }
+  }
 }

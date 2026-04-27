@@ -9,36 +9,42 @@ import thunderstorm from "../assets/icons/weather/thunderstorm.svg";
 import windy from "../assets/icons/weather/windy.svg";
 
 export function getWeatherIcon(type, isDay = true) {
-  switch (type) {
-    case "Clear":
+
+  const normalizedType = String(type ?? "").trim().toLowerCase();
+
+  switch (normalizedType) {
+    case "clear":
+    case "sunny":
       return isDay ? clearDay : clearNight;
 
-    case "Partly Cloudy":
-      return partlyCloudy;
-
-    case "Clouds":
+    case "clouds":
+    case "cloudy":
+    case "overcast":
       return cloudy;
 
-    case "Rain":
-    case "Drizzle":
+    case "partly cloudy":
+      return partlyCloudy;
+
+    case "rain":
+    case "drizzle":
       return rain;
 
-    case "Heavy Rain":
+    case "heavy rain":
       return rain;
 
-    case "Thunderstorm":
+    case "thunderstorm":
       return thunderstorm;
 
-    case "Snow":
+    case "snow":
       return snow;
 
-    case "Mist":
-    case "Fog":
-    case "Haze":
+    case "mist":
+    case "fog":
+    case "haze":
       return fog;
 
-    case "Wind":
-    case "Windy":
+    case "wind":
+    case "windy":
       return windy;
 
     default:

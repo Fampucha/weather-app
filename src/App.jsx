@@ -3,12 +3,9 @@
 // import heroImg from './assets/hero.png'
 import { useEffect, useState, useMemo } from 'react'
 import { weatherThemes } from './constants/weatherThemes'
-import { getWeatherType } from './utils/getWeatherType'
 import { isDayTime } from './utils/isDay'
-import { mapWeatherType } from "./utils/mapWeatherType";
-import { getWeatherLabel } from "./utils/getWeatherLabel";
-
-import { getForecast } from "./services/weatherService";
+import { resolveWeatherTheme } from "./utils/resolveWeatherTheme";
+import { getForecast, searchCities } from "./services/weatherService";
 import HourlyForecast from "./components/weather/HourlyForecast";
 import Sidebar from "./components/weather/Sidebar";
 
@@ -20,6 +17,10 @@ function App() {
   const [activeHourIndex, setActiveHourIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [inputValue, setInputValue] = useState("Kyiv");
+  const [query, setQuery] = useState("Kyiv");
+  const [suggestions, setSuggestions] = useState([]);
+  
 
   const getClosestHourIndex = (hours = [], referenceEpoch) => {
     if (!hours.length || !referenceEpoch) return 0;
@@ -36,11 +37,14 @@ function App() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
+        if (!query.trim()) return;
+
         setLoading(true);
 
-        const data = await getForecast("Poltava");
+        const data = await getForecast(query);
 
         setWeatherData(data);
+        setInputValue(`${data.location.name}, ${data.location.country}`);
       } catch (err) {
         console.error(err); //!
         setError(err);
@@ -50,7 +54,21 @@ function App() {
     };
 
     fetchWeather();
-  }, []);
+  }, [query]);
+
+  useEffect(() => {
+  const fetchSuggestions = async () => {
+    if (!inputValue.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const data = await searchCities(inputValue);
+    setSuggestions(data);
+  };
+
+  fetchSuggestions();
+}, [inputValue]);
 
   const days = useMemo(() => {
     if (!weatherData) return [];
@@ -85,17 +103,23 @@ function App() {
     return days[activeDay]?.hour?.[activeHourIndex];
   }, [days, activeDay, activeHourIndex]);
 
-  //! Витягуємо weather type
-  const weatherMain = mapWeatherType(currentHourData?.condition?.code);
-  const weatherDescription = currentHourData?.condition?.text;
+  //! Єдиний пайплайн стану погоди для фону + h1
+  const currentWeatherState = useMemo(() => {
+    if (!currentHourData) {
+      return {
+        weatherType: "clear",
+        theme: weatherThemes.clear,
+        label: weatherThemes.clear.label,
+      };
+    }
 
-  //! Отримуємо theme
-  const theme = useMemo(() => {
-    if (!weatherMain) return null;
+    return resolveWeatherTheme({
+      code: currentHourData?.condition?.code,
+      text: currentHourData?.condition?.text,
+    });
+  }, [currentHourData]);
 
-    const type = getWeatherType(weatherMain, weatherDescription);
-    return weatherThemes[type] || weatherThemes.clear;
-  }, [weatherMain, weatherDescription]);
+  const theme = currentWeatherState.theme;
 
   //! визначення дня та ночі
   const isDay = useMemo(() => {
@@ -112,7 +136,7 @@ function App() {
     return isDayTime(currentHourData.time_epoch, 0);
   }, [currentHourData]);
 
-  //!Tabs state 
+  //! Tabs state 
   const [daysCount, setDaysCount] = useState(5);
 
   const visibleDays = useMemo(() => {
@@ -126,45 +150,73 @@ function App() {
     }
   }, [daysCount, visibleDays.length, activeDay]);
 
-  const weatherType = getWeatherType(weatherMain, weatherDescription);
-  const label = getWeatherLabel(weatherType);
+  //! форматування дати і часу
+  const formattedDate = useMemo(() => {
+    if (!currentHourData?.time_epoch) return "";
+
+    const date = new Date(currentHourData.time_epoch * 1000);
+
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }, [currentHourData]);
+
+  const formattedTime = useMemo(() => {
+    if (!currentHourData?.time_epoch) return "";
+
+    const date = new Date(currentHourData.time_epoch * 1000);
+
+    return date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }, [currentHourData]);
+
 
   return (
     <div
+    className={`app app-shell ${isDay ? "day" : "night"}`}
     style={{
-      minHeight: "100vh",
       background: theme
         ? `url(${theme[isDay ? 'day' : 'night']?.background}) center/cover no-repeat`
         : "#000",
-      color: "#fff",
-
-      transition: "0.3s"
     }}
     >
       {loading && <p>Loading...</p>}
-      {error && <p>Щось пішло не так 😢</p>}
+      {error && <p>Something went wrong...</p>}
 
       {!loading && weatherData && days.length > 0 && (
         <>
-          <div style={{ display: "flex", gap: 20 }}>
+          <div className="app-content">
 
-            <div style={{ flex: 1 }}>
-              <h1>
-                {theme?.label || weatherMain}
-              </h1>
+            <div className="app-main">
+              <div className="app-datetime">
+                <span className="app-date">{formattedDate}</span>
+                <span className="app-divider"></span>
+                <span className="app-time">{formattedTime}</span>
+              </div>
 
-              {/* HourlyForecast */}
-              <HourlyForecast
-                hours={visibleDays[activeDay]?.hour}
-                activeHourIndex={activeHourIndex}
-                setActiveHourIndex={setActiveHourIndex}
-              />
+              <div className="app-info">
+                <h1 className="app-title">
+                  {currentWeatherState.label}
+                </h1>
+
+                <span className="hourly-divider"></span>
+
+                {/* HourlyForecast */}
+                <HourlyForecast
+                  hours={visibleDays[activeDay]?.hour}
+                  activeHourIndex={activeHourIndex}
+                  setActiveHourIndex={setActiveHourIndex}
+                />
+              </div>
             </div>
-
             
             {/* SIDEBAR */}
             <Sidebar
-              city={weatherData.location.name}
+              city={`${weatherData.location.name}, ${weatherData.location.country}`}
               data={currentHourData}
               days={visibleDays}
               activeDay={activeDay}
@@ -172,6 +224,11 @@ function App() {
               isDay={isDay}
               daysCount={daysCount}
               setDaysCount={setDaysCount} 
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              setQuery={setQuery} 
+              query={query}
+              suggestions={suggestions}
             />
           </div>
         </>

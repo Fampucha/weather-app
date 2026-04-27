@@ -12,3 +12,17 @@ export const getForecast = async (city) => {
     console.error("Error fetching forecast:", error);
   }
 };
+
+export const searchCities = async (query) => {
+  try {
+    const response = await fetch(
+      `https://api.weatherapi.com/v1/search.json?key=${API_KEY}&q=${query}`
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error searching cities:", error);
+    return [];
+  }
+};

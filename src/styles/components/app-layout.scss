@@ -1,0 +1,76 @@
+.app-shell {
+  min-height: 100vh;
+  color: #fff;
+  transition: 0.3s;
+
+  .app-content {
+    display: flex;
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+      padding: 33px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .app-datetime {
+        padding-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+        font-size: 18px;
+        
+
+        .app-date {
+          padding-right: 9px;
+        }
+
+        .app-divider {
+          display: block;
+          height: 20px;
+          width: 1px;
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 1px 0 0 rgba(255,255,255,0.13);
+        }
+        
+        .app-time {
+          padding-left: 12px;
+        }
+      }
+
+      .app-info {
+        .app-title {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 0;
+          margin-bottom: 40px;
+          font-size: 74px;
+          line-height: 1.15;
+
+          background: linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.9),
+            rgba(255,255,255,0.15)
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          color: transparent;
+        }  
+        
+        .hourly-divider {
+          display: block;
+          height: 1px;
+          width: 100%;
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 1px 0 rgba(255,255,255,0.13);
+        }
+      }
+    }
+  }
+}
+
+
+
+
+

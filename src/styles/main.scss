@@ -1,12 +1,13 @@
-@import './abstracts/variables';
-@import './abstracts/mixins';
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
 
-@import './base/reset';
-@import './base/typography';
+@use './base/reset' as *;
+@use './base/typography' as *;
 
-@import './components/weather-card';
-@import './components/sidebar';
+@use './components/weather-card' as *;
+@use './components/sidebar' as *;
+@use './components/app-layout' as *;
 
-@import './themes/day';
-@import './themes/night';
+@use './themes/day' as *;
+@use './themes/night' as *;
 
