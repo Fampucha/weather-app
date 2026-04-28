@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { resolveWeatherIcon } from "../../utils/resolveWeatherIcon";
+import { useScrollableDrag } from "../../utils/useScrollableDrag";
 import clearDay from "../../assets/icons/weather/clear-day.svg";
 import clearNight from "../../assets/icons/weather/clear-night.svg";
 
@@ -8,10 +9,33 @@ function HourlyForecast({
   activeHourIndex,
   setActiveHourIndex,
 }) {
+  const { containerRef, handlers } = useScrollableDrag({
+    axis: "x",
+    wheelToHorizontal: true,
+  });
+  const cardRefs = useRef([]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const activeCard = cardRefs.current[activeHourIndex];
+
+    if (!container || !activeCard) return;
+
+    activeCard.scrollIntoView({
+      behavior: "auto",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [activeHourIndex, hours, containerRef]);
+
   if (!hours?.length) return null;
 
   return (
-    <div className="hourly-forecast">
+    <div
+      className="hourly-forecast"
+      ref={containerRef}
+      {...handlers}
+    >
       {hours.map((item, index) => {
         const hour = new Date(item.time).toLocaleTimeString([], { hour: "2-digit" });
         const conditionCode = Number(item.condition.code);
@@ -49,6 +73,9 @@ function HourlyForecast({
             className={`hour-item__card card ${isActive ? "hour-item__card--active card--active" : ""}`}
             key={item.time_epoch}
             onClick={() => setActiveHourIndex(index)}
+            ref={(node) => {
+              cardRefs.current[index] = node;
+            }}
           >
             <p className="hour-item__time">{hour}:00</p>
 

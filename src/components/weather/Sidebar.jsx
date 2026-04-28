@@ -4,6 +4,7 @@ import locationIcon from "../../assets/icons/location.svg";
 import arrowIcon from "../../assets/icons/arrow.svg";
 
 import { getWindDirection } from "../../utils/getWindDirection";
+import { useScrollableDrag } from "../../utils/useScrollableDrag";
 
 export default function Sidebar({
   city,
@@ -22,6 +23,10 @@ export default function Sidebar({
 }) {
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const searchWrapRef = useRef(null);
+  const { containerRef: dailyScrollRef, handlers: dailyScrollHandlers } = useScrollableDrag({
+    axis: "y",
+    wheelToHorizontal: false,
+  });
 
   const fallbackSearchValue = city || query || "";
 
@@ -174,7 +179,11 @@ export default function Sidebar({
           })}
         </div>
 
-        <div className="sidebar__daily">
+        <div
+          className="sidebar__daily"
+          ref={dailyScrollRef}
+          {...dailyScrollHandlers}
+        >
           <DailyList
             days={days}
             activeDay={activeDay}

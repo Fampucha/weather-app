@@ -20,6 +20,7 @@ function App() {
   const [inputValue, setInputValue] = useState("Kyiv");
   const [query, setQuery] = useState("Kyiv");
   const [suggestions, setSuggestions] = useState([]);
+  const [nowTick, setNowTick] = useState(Date.now());
   
 
   const getClosestHourIndex = (hours = [], referenceEpoch) => {
@@ -69,6 +70,14 @@ function App() {
 
   fetchSuggestions();
 }, [inputValue]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNowTick(Date.now());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const days = useMemo(() => {
     if (!weatherData) return [];
@@ -164,15 +173,15 @@ function App() {
   }, [currentHourData]);
 
   const formattedTime = useMemo(() => {
-    if (!currentHourData?.time_epoch) return "";
-
-    const date = new Date(currentHourData.time_epoch * 1000);
+    if (!weatherData?.location?.tz_id) return "";
+    const date = new Date(nowTick);
 
     return date.toLocaleTimeString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: weatherData.location.tz_id,
     });
-  }, [currentHourData]);
+  }, [nowTick, weatherData]);
 
 
   return (

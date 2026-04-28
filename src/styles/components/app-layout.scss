@@ -1,10 +1,33 @@
 .app-shell {
+  position: relative;
   min-height: 100vh;
   color: #fff;
   transition: 0.3s;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+
+    background:
+    radial-gradient(
+      ellipse 35% 60% at -5% 50%,
+      rgba(0,0,0,0.20),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 50% 110%,
+      rgba(0,0,0,0.20),
+      transparent 72%
+    );
+  }
 
   .app-content {
     display: flex;
+    z-index: 1;
 
     .app-main {
       flex: 1;
@@ -46,6 +69,7 @@
           margin-bottom: 40px;
           font-size: 74px;
           line-height: 1.15;
+          letter-spacing: 0.06em;
 
           background: linear-gradient(
             to bottom,
