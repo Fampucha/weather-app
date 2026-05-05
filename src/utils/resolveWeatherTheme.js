@@ -4,7 +4,6 @@ import { weatherThemes } from "../constants/weatherThemes";
 export function resolveWeatherTheme({ code, text }) {
   const normalizedType = String(normalizeWeatherType(code, text)).toLowerCase().trim();
 
-  // "clouds"/"partly cloudy"/"heavy rain" (normalized) -> weatherThemes keys
   const themeKeyMap = {
     clear: "clear",
     sunny: "clear",

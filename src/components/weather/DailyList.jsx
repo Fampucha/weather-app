@@ -45,7 +45,7 @@ export default function DailyList({
                 onClick={() => setActiveDay(index)}
                 data-active={isActive}
             >
-                {/* іконка */}
+
                 <div className="day-item__icon-wrap">
                     <img className="day-item__icon"
                         src={icon}
@@ -53,7 +53,6 @@ export default function DailyList({
                     />
                 </div>                
 
-                {/* дата + стан погоди */}
                 <div className="day-item__info">
                     <p className="day-item__date">
                         {formattedDate}
@@ -65,7 +64,6 @@ export default function DailyList({
 
                 <span className="day-item__divider"></span>
 
-                {/* температура */}
                 <div className="day-item__temp">
                     <p className="day-item__temp-min">{min}°</p>
                     <p className="day-item__temp-max">{max}°</p>

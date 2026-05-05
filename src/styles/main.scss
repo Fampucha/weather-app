@@ -1,7 +1,6 @@
 @use './abstracts/variables' as *;
 @use './abstracts/mixins' as *;
 
-@use './base/reset' as *;
 @use './base/typography' as *;
 
 @use './components/weather-card' as *;
@@ -11,3 +10,4 @@
 @use './themes/day' as *;
 @use './themes/night' as *;
 
+@use './base/responsive' as *;

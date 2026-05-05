@@ -51,17 +51,6 @@ function HourlyForecast({
         const isClearCondition =
           conditionCode === 1000 || /^(clear|sunny)$/i.test(conditionText);
 
-        // console.log("HOURLY DEBUG:", {
-        //   time: item.time,
-        //   hour,
-        //   code: conditionCode,
-        //   text: conditionText,
-        //   isDay: isHourDay,
-        //   weatherType,
-        //   isClearCondition,
-        //   resolvedIcon,
-        // });
-
         const icon = isClearCondition
           ? (isHourDay ? clearDay : clearNight)
           : resolvedIcon;
