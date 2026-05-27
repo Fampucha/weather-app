@@ -39,3 +39,5 @@ coverage
 
 # TypeScript caches
 *.tsbuildinfo
+
+AGENTS.md
