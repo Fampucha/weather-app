@@ -1,45 +1,92 @@
 .app.night {
 
-  // 🔘 КНОПКА
   .forecast-btn {
-    background: rgba(0, 0, 0, 0.15);
+    background: transparent;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    &--active {
+      background: rgba(0, 0, 0, 0.15);
+    }
   }
 
-  // 🟦 НЕАКТИВНА КАРТКА
   .card {
+    position: relative;
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.15) 0%,
       rgba(255, 255, 255, 0.03) 100%
     );
 
-    border: 1px solid;
-    border-image: linear-gradient(
-      180deg,
-      #ffffff,
-      #3a3a3a
-    ) 1;
+    border: 1px solid transparent;
+    backdrop-filter: blur(5px);
+    transition: all 0.25s ease;
 
-    backdrop-filter: blur(16px);
-  }
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
 
-  // ⭐ АКТИВНА
-  .card.active {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.25) 0%,
-      rgba(255, 255, 255, 0.13) 100%
-    );
+      background: linear-gradient(
+        180deg,
+        #ffffff,
+        #3a3a3a
+      );
+      opacity: 0.2;
 
-    border: 2px solid;
-    border-image: linear-gradient(
-      180deg,
-      #ffffff,
-      #3a3a3a
-    ) 1;
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
 
-    backdrop-filter: blur(20px);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    }
+
+    &--active {
+      position: relative;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.13) 100%
+      );
+
+      backdrop-filter: blur(10px);
+
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    &--active::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2px;
+
+      background: linear-gradient(
+        180deg,
+        #ffffff,
+        #3a3a3a
+      );
+        
+      opacity: 0.25;
+
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
   }
 }

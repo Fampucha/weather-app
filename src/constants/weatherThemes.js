@@ -28,6 +28,7 @@ import windyNight from '../assets/images/weather/windy/night.jpg'
 
 export const weatherThemes = {
   clear: {
+    label: "Clear",
     day: {
       background: clearDay,
       mode: 'day'
@@ -39,6 +40,7 @@ export const weatherThemes = {
   },
 
   partlyCloudy: {
+    label: "Partly Cloudy",
     day: {
       background: partlyCloudyDay,
       mode: 'day'
@@ -50,6 +52,7 @@ export const weatherThemes = {
   },
 
   cloudy: {
+    label: "Cloudy",
     day: {
       background: cloudyDay,
       mode: 'day'
@@ -61,6 +64,7 @@ export const weatherThemes = {
   },
 
   rain: {
+    label: "Rain",
     day: {
       background: rainDay,
       mode: 'day'
@@ -72,6 +76,7 @@ export const weatherThemes = {
   },
 
   heavyRain: {
+    label: "Heavy Rain",
     day: {
       background: heavyRainDay,
       mode: 'day'
@@ -83,6 +88,7 @@ export const weatherThemes = {
   },
 
   thunderstorm: {
+    label: "Thunderstorm",
     day: {
       background: thunderstormDay,
       mode: 'day'
@@ -94,6 +100,7 @@ export const weatherThemes = {
   },
 
   snow: {
+    label: "Snow",
     day: {
       background: snowDay,
       mode: 'day'
@@ -105,6 +112,7 @@ export const weatherThemes = {
   },
   
   fog: {
+    label: "Fog",
     day: {
       background: fogDay,
       mode: 'day'
@@ -116,6 +124,7 @@ export const weatherThemes = {
   },
 
   windy: {
+    label: "Windy",
     day: {
       background: windyDay,
       mode: 'day'

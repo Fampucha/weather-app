@@ -1,277 +1,161 @@
-// import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-// import './App.css'
-import { weatherThemes } from './constants/weatherThemes'
-import { getWeatherType } from './utils/getWeatherType'
-import { isDayTime } from './utils/isDay'
+import { useState, useMemo } from 'react'
 
-import { useEffect, useState } from "react";
-import { getWeather } from "./services/weatherService";
+import HourlyForecast from "./components/weather/HourlyForecast";
+import Sidebar from "./components/weather/Sidebar";
+import SidebarTopContent from "./components/weather/SidebarTopContent";
 
-// function App() {
-//   const weather = {
-//     weather: [{ main: 'Rain', description: 'heavy rain' }],
-//     sys: { sunrise: 1712550000, sunset: 1712600000 },
-//     dt: 1712570000
-//   }
-
-//   const type = getWeatherType(
-//     weather.weather[0].main,
-//     weather.weather[0].description
-//   )
-
-//   const isDay = isDayTime(
-//     weather.dt,
-//     weather.sys.sunrise,
-//     weather.sys.sunset
-//   )
-
-//   const theme = weatherThemes[type][isDay ? 'day' : 'night']
-
-//   return (
-//     <div
-//       style={{
-//         backgroundImage: `url(${theme.background})`,
-//         color: theme.textColor
-//       }}
-//     >
-//       Weather App
-//     </div>
-//   )
-// }
+import { useWeather } from "./hooks/useWeather";
+import { useClock } from "./hooks/useClock";
+import { useWeatherTheme } from "./hooks/useWeatherTheme";
+import { useForecastTabs } from "./hooks/useForecastTabs";
+import { useFormattedDateTime } from "./hooks/useFormattedDateTime";
+import { getClosestHourIndex } from "./utils/getClosestHourIndex";
 
 function App() {
-  const [weatherData, setWeatherData] = useState(null);
+  const {
+    weatherData,
+    loading,
+    error,
+    query,
+    setQuery,
+    inputValue,
+    setInputValue,
+    suggestions
+  } = useWeather();
 
-  useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const res = await fetch(URL);
-        const data = await res.json();
+  const nowTick = useClock();
 
-        console.log(data); // 🔥 дивишся що приходить
-        setWeatherData(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  const days = useMemo(() => {
+    return weatherData?.forecast?.forecastday || [];
+  }, [weatherData]);
 
-    fetchWeather();
-  }, []);
+  const {
+    activeDay,
+    setActiveDay,
+    visibleDays,
+    daysCount,
+    setDaysCount
+  } = useForecastTabs(days);
 
-  return <div>Weather App</div>;
+  const [activeHourIndex, setActiveHourIndex] = useState(0);
+
+  const autoTodayHourIndex = useMemo(() => {
+    const selectedDay = visibleDays[activeDay];
+    if (!selectedDay?.hour?.length) return 0;
+    if (activeDay !== 0) return 0;
+    if (!weatherData?.location?.localtime_epoch) return 0;
+
+    return getClosestHourIndex(
+      selectedDay.hour,
+      weatherData.location.localtime_epoch
+    );
+  }, [visibleDays, activeDay, weatherData]);
+
+
+  const effectiveActiveHourIndex =
+    activeDay === 0 && activeHourIndex === 0
+      ? autoTodayHourIndex
+      : activeHourIndex;
+  const currentHourData =
+     visibleDays[activeDay]?.hour?.[effectiveActiveHourIndex];
+
+  const {
+    theme,
+    label,
+    isDay
+  } = useWeatherTheme(currentHourData);
+
+  const { formattedDate, formattedTime } =
+  useFormattedDateTime(currentHourData, nowTick, weatherData);
+
+  const handleActiveDayChange = (dayIndex) => {
+    setActiveDay(dayIndex);
+    setActiveHourIndex(0);
+  };
+
+  return (
+    <div
+      className={`app app-shell ${isDay ? "day" : "night"}`}
+      style={{
+        background: theme
+          ? `url(${theme[isDay ? 'day' : 'night']?.background}) center/cover no-repeat`
+          : "#000",
+      }}
+    >
+      {loading && <p>Loading...</p>}
+      {error && <p>Something went wrong...</p>}
+
+      {!loading && weatherData && days.length > 0 && (
+        <>
+          <div className="app-content">
+
+            <div className="app-main">
+              <div className="app-datetime">
+                <span className="app-date">{formattedDate}</span>
+                <span className="app-divider"></span>
+                <span className="app-time">{formattedTime}</span>
+              </div>
+
+              <div className="app-mobile-search">
+                <SidebarTopContent
+                  city={`${weatherData.location.name}, ${weatherData.location.country}`}
+                  data={currentHourData}
+                  setQuery={setQuery}
+                  query={query}
+                  inputValue={inputValue}
+                  setInputValue={setInputValue}
+                  suggestions={suggestions}
+                  showCurrent={false}
+                />
+              </div>
+
+              <div className="app-mobile-current">
+                <SidebarTopContent
+                  city={`${weatherData.location.name}, ${weatherData.location.country}`}
+                  data={currentHourData}
+                  setQuery={setQuery}
+                  query={query}
+                  inputValue={inputValue}
+                  setInputValue={setInputValue}
+                  suggestions={suggestions}
+                  showSearch={false}
+                />
+              </div>
+
+              <div className="app-info">
+                <h1 className="app-title">
+                  {label}
+                </h1>
+
+                <span className="hourly-divider"></span>
+
+                <HourlyForecast
+                  hours={visibleDays[activeDay]?.hour}
+                  activeHourIndex={effectiveActiveHourIndex}
+                  setActiveHourIndex={setActiveHourIndex}
+                />
+              </div>
+            </div>
+
+            <Sidebar
+              city={`${weatherData.location.name}, ${weatherData.location.country}`}
+              data={currentHourData}
+              days={visibleDays}
+              activeDay={activeDay}
+              setActiveDay={handleActiveDayChange}
+              isDay={isDay}
+              daysCount={daysCount}
+              setDaysCount={setDaysCount}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              setQuery={setQuery}
+              query={query}
+              suggestions={suggestions}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
-// function App() {
-//   const [data, setData] = useState(null)
-
-//   console.log(import.meta.env.VITE_WEATHER_API_KEY);
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const result = await getWeather("Kyiv");
-//       setData(result);
-//     };
-
-//     fetchData();
-//   }, []);
-//   return (
-//     <div>
-//       {data ? <h1>{data.location.name}</h1> : <p>Loading...</p>}
-//     </div>
-//   );
-
-
-  // return (
-  //   <>
-  //     <div className="app">
-
-  //     {/* Ліва частина */}
-  //     <div className="left">
-  //       <div>
-  //         <p>21 April 2026</p>
-  //         <p>11:00</p>
-  //       </div>
-  //       <h1>Heavy Rain</h1>
-  //       <div>
-  //         <div className='card'>
-  //           <p>09:00</p>
-  //           <img src="assets/icons/weather/cloudy.svg" alt="cloudy" />
-  //           <h3>9°C</h3>
-  //         </div>
-  //         <div className='card active'>
-  //           <p>10:00</p>
-  //           <img src="" alt="" />
-  //           <h3>10°C</h3>
-  //         </div>
-  //       </div>
-  //     </div>
-
-  //     {/* Права частина */}
-  //     <div className="right">
-  //       <div>
-  //         <img src="" alt="" />
-  //         <p>Tbilisi, Georgia</p>
-  //         <img src="" alt="" />
-  //       </div>
-  //       <div>
-  //         <h2>11°C</h2>
-  //         <div>
-  //           <img src="" alt="" />
-  //           <p>Nortwest, 38.9 km/h</p>
-  //         </div>
-  //       </div>
-  //       <div>
-  //         <h3>The NextDaysForecast</h3>
-  //         <div className='tabs-block-wrapper'>
-  //           <div id="tabs">
-  //             <div className="tab-btn active" data-btn="1">
-  //               5 days
-  //             </div>
-  //             <div className="tab-btn" data-btn="2">
-  //               14 days
-  //             </div>
-  //             <div className="tab-btn" data-btn="3">
-  //               30 days
-  //             </div>
-  //           </div>
-  //           <div id="contents">
-  //             <div className="content active" data-content="1">
-  //               <img src="" alt="" />
-  //               <div>
-  //                 <p>Friday, April 21</p>
-  //                 <p>Heavy Rain</p>
-  //               </div>
-  //               <div>
-  //                 <p>9°</p>
-  //                 <p>16°</p>
-  //               </div>
-  //             </div>
-  //             <div className="content" data-content="2">
-  //               <img src="" alt="" />
-  //               <div>
-  //                 <p>Saturday, April 22</p>
-  //                 <p>Partly Cloudy</p>
-  //               </div>
-  //               <div>
-  //                 <p>9°</p>
-  //                 <p>16°</p>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-    
-  //     {/* <section id="center">
-  //       <div className="hero">
-  //         <img src={heroImg} className="base" width="170" height="179" alt="" />
-  //         <img src={reactLogo} className="framework" alt="React logo" />
-  //         <img src={viteLogo} className="vite" alt="Vite logo" />
-  //       </div>
-  //       <div>
-  //         <h1>Get started</h1>
-  //         <p>
-  //           Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-  //         </p>
-  //       </div>
-  //       <button
-  //         className="counter"
-  //         onClick={() => setCount((count) => count + 1)}
-  //       >
-  //         Count is {count}
-  //       </button>
-  //     </section>
-
-  //     <div className="ticks"></div>
-
-  //     <section id="next-steps">
-  //       <div id="docs">
-  //         <svg className="icon" role="presentation" aria-hidden="true">
-  //           <use href="/icons.svg#documentation-icon"></use>
-  //         </svg>
-  //         <h2>Documentation</h2>
-  //         <p>Your questions, answered</p>
-  //         <ul>
-  //           <li>
-  //             <a href="https://vite.dev/" target="_blank">
-  //               <img className="logo" src={viteLogo} alt="" />
-  //               Explore Vite
-  //             </a>
-  //           </li>
-  //           <li>
-  //             <a href="https://react.dev/" target="_blank">
-  //               <img className="button-icon" src={reactLogo} alt="" />
-  //               Learn more
-  //             </a>
-  //           </li>
-  //         </ul>
-  //       </div>
-  //       <div id="social">
-  //         <svg className="icon" role="presentation" aria-hidden="true">
-  //           <use href="/icons.svg#social-icon"></use>
-  //         </svg>
-  //         <h2>Connect with us</h2>
-  //         <p>Join the Vite community</p>
-  //         <ul>
-  //           <li>
-  //             <a href="https://github.com/vitejs/vite" target="_blank">
-  //               <svg
-  //                 className="button-icon"
-  //                 role="presentation"
-  //                 aria-hidden="true"
-  //               >
-  //                 <use href="/icons.svg#github-icon"></use>
-  //               </svg>
-  //               GitHub
-  //             </a>
-  //           </li>
-  //           <li>
-  //             <a href="https://chat.vite.dev/" target="_blank">
-  //               <svg
-  //                 className="button-icon"
-  //                 role="presentation"
-  //                 aria-hidden="true"
-  //               >
-  //                 <use href="/icons.svg#discord-icon"></use>
-  //               </svg>
-  //               Discord
-  //             </a>
-  //           </li>
-  //           <li>
-  //             <a href="https://x.com/vite_js" target="_blank">
-  //               <svg
-  //                 className="button-icon"
-  //                 role="presentation"
-  //                 aria-hidden="true"
-  //               >
-  //                 <use href="/icons.svg#x-icon"></use>
-  //               </svg>
-  //               X.com
-  //             </a>
-  //           </li>
-  //           <li>
-  //             <a href="https://bsky.app/profile/vite.dev" target="_blank">
-  //               <svg
-  //                 className="button-icon"
-  //                 role="presentation"
-  //                 aria-hidden="true"
-  //               >
-  //                 <use href="/icons.svg#bluesky-icon"></use>
-  //               </svg>
-  //               Bluesky
-  //             </a>
-  //           </li>
-  //         </ul>
-  //       </div>
-  //     </section>
-
-  //     <div className="ticks"></div>
-  //     <section id="spacer"></section> */}
-  //   </>
-  // )
-// }
-
 export default App
-
