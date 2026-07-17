@@ -8,8 +8,10 @@ import snow from "../assets/icons/weather/snow.svg";
 import thunderstorm from "../assets/icons/weather/thunderstorm.svg";
 import windy from "../assets/icons/weather/windy.svg";
 
-export function getWeatherIcon(type, isDay = true) {
-
+export function getWeatherIcon(
+  type: string | null | undefined,
+  isDay: boolean = true
+): string {
   const normalizedType = String(type ?? "").trim().toLowerCase();
 
   switch (normalizedType) {

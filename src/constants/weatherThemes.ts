@@ -25,6 +25,19 @@ import fogNight from '../assets/images/weather/fog/night.jpg'
 import windyDay from '../assets/images/weather/windy/day.jpg'
 import windyNight from '../assets/images/weather/windy/night.jpg'
 
+export type ThemeMode = "day" | "night";
+
+export interface WeatherThemeVariant {
+  background: string;
+  mode: ThemeMode;
+}
+
+export interface WeatherTheme {
+  label: string;
+  day: WeatherThemeVariant;
+  night: WeatherThemeVariant;
+}
+
 
 export const weatherThemes = {
   clear: {
@@ -134,4 +147,6 @@ export const weatherThemes = {
       mode: 'night'
     }
   }
-}
+}as const satisfies Record<string, WeatherTheme>;
+
+export type WeatherThemeKey = keyof typeof weatherThemes;
