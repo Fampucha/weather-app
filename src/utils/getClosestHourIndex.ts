@@ -1,11 +1,9 @@
 import type { WeatherApiForecastHour } from "../types";
 
-// interface HourItem {
-//   time_epoch: number;
-// }
+type HourWithEpoch = Pick<WeatherApiForecastHour, "time_epoch">;
 
 export function getClosestHourIndex(
-  hours: WeatherApiForecastHour[] = [], 
+  hours: readonly HourWithEpoch[] = [], 
   referenceEpoch?: number
 ): number  {
   if (!hours.length || referenceEpoch === undefined) {
