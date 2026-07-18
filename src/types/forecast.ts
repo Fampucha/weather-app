@@ -78,7 +78,7 @@ export type WeatherApiForecastDay = {
   date: string;
   day: WeatherApiForecastDaySummary;
   hour: WeatherApiForecastHour[];
-  // date_epoch: number;
+  date_epoch: number;
   // astro: WeatherApiForecastAstro;
 };
 
