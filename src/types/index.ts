@@ -1,16 +1,22 @@
 export type {
   WeatherApiCondition,
-  WeatherApiCurrent,
-  WeatherApiError,
   WeatherApiLocation,
   WeatherApiSearchCity,
 } from "./weather";
 
+// export type {
+//   WeatherApiCurrent,
+//   WeatherApiError,
+// } from "./weather";
+
 export type {
   WeatherApiForecast,
-  WeatherApiForecastAstro,
   WeatherApiForecastDay,
   WeatherApiForecastDaySummary,
   WeatherApiForecastHour,
   WeatherApiForecastResponse,
 } from "./forecast";
+
+// export type {
+//   WeatherApiForecastAstro,
+// } from "./forecast";
