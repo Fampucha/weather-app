@@ -57,9 +57,9 @@ export type WeatherApiSearchCity = {
   // url: string;
 };
 
-// export type WeatherApiError = {
-//   error: {
-//     code: number;
-//     message: string;
-//   };
-// };
+export type WeatherApiError = {
+  error: {
+    code: number;
+    message: string;
+  };
+};

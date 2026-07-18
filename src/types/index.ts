@@ -4,10 +4,10 @@ export type {
   WeatherApiSearchCity,
 } from "./weather";
 
-// export type {
+export type {
 //   WeatherApiCurrent,
-//   WeatherApiError,
-// } from "./weather";
+  WeatherApiError,
+} from "./weather";
 
 export type {
   WeatherApiForecast,
