@@ -1,7 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type Dispatch, type KeyboardEvent, type SetStateAction } from "react";
 import locationIcon from "../../assets/icons/location.svg";
 import arrowIcon from "../../assets/icons/arrow.svg";
 import { getWindDirection } from "../../utils/getWindDirection";
+import type { WeatherApiCurrent, WeatherApiSearchCity } from "../../types";
+
+type SidebarTopContentProps = {
+  city?: string;
+  data: WeatherApiCurrent | null;
+  setQuery: Dispatch<SetStateAction<string>>;
+  query: string;
+  inputValue: string;
+  setInputValue: Dispatch<SetStateAction<string>>;
+  suggestions: WeatherApiSearchCity[];
+  showSearch?: boolean;
+  showCurrent?: boolean;
+};
 
 export default function SidebarTopContent({
   city,
@@ -13,20 +26,20 @@ export default function SidebarTopContent({
   suggestions,
   showSearch = true,
   showCurrent = true,
-}) {
-  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
-  const searchWrapRef = useRef(null);
+}: SidebarTopContentProps) {
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState<boolean>(false);
+  const searchWrapRef = useRef<HTMLDivElement | null>(null);
 
   const fallbackSearchValue = city || query || "";
 
-  const formatSuggestionLabel = (item) => {
+  const formatSuggestionLabel = (item: WeatherApiSearchCity): string => {
     if (!item?.name) return "";
     if (!item?.country) return item.name;
 
     return `${item.name}, ${item.country}`;
   };
 
-  const handleSearchSubmit = (rawValue) => {
+  const handleSearchSubmit = (rawValue: string): void => {
     const normalizedValue = rawValue.trim();
 
     if (!normalizedValue) return;
@@ -36,8 +49,9 @@ export default function SidebarTopContent({
   };
 
   useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (!searchWrapRef.current?.contains(event.target)) {
+    const handleOutsideClick = (event: MouseEvent): void => {
+      const target = event.target;
+      if (target instanceof Node && !searchWrapRef.current?.contains(target)) {
         setIsSuggestionsOpen(false);
       }
     };
@@ -61,7 +75,7 @@ export default function SidebarTopContent({
               className="sidebar__search-input"
               value={inputValue}
               onFocus={() => setIsSuggestionsOpen(true)}
-              onChange={(e) => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 setInputValue(e.target.value);
                 setIsSuggestionsOpen(true);
               }}
@@ -70,13 +84,13 @@ export default function SidebarTopContent({
                   setInputValue(fallbackSearchValue);
                 }
               }}
-              onKeyDown={(e) => {
+              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                 if (e.key !== "Enter") return;
 
                 e.preventDefault();
 
                 const firstSuggestion = suggestions[0];
-                const hasCountryInInput = (inputValue || "").includes(",");
+                const hasCountryInInput = inputValue.includes(",");
 
                 if (firstSuggestion && !hasCountryInInput) {
                   const formattedLocation = formatSuggestionLabel(firstSuggestion);
@@ -85,7 +99,7 @@ export default function SidebarTopContent({
                   return;
                 }
 
-                handleSearchSubmit(inputValue || "");
+                handleSearchSubmit(inputValue);
               }}
             />
 
@@ -97,7 +111,7 @@ export default function SidebarTopContent({
               onClick={() => setIsSuggestionsOpen((prev) => !prev)}
               aria-label={isSuggestionsOpen ? "Hide suggestions" : "Show suggestions"}
             >
-              <span className="sidebar__search-toggle-divider"></span>
+              <span className="sidebar__search-toggle-divider" />
               <img src={arrowIcon} alt="" className="sidebar__search-arrow" />
             </button>
           </div>
@@ -131,10 +145,10 @@ export default function SidebarTopContent({
         <div className="sidebar__current">
           <p className="sidebar__temp">{Math.round(data.temp_c)}°C</p>
           <p className="sidebar__wind">
-            {getWindDirection(data.wind_degree)}, {data.wind_kph} km/h
+            {getWindDirection(data.wind_degree)},{" "} {data.wind_kph} km/h
           </p>
 
-          <span className="sidebar__divider"></span>
+          <span className="sidebar__divider" />
         </div>
       )}
     </div>

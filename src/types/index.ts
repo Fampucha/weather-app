@@ -5,7 +5,7 @@ export type {
 } from "./weather";
 
 export type {
-//   WeatherApiCurrent,
+  WeatherApiCurrent,
   WeatherApiError,
 } from "./weather";
 
