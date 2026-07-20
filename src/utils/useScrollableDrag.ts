@@ -1,8 +1,31 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, type MouseEventHandler, type WheelEventHandler } from "react";
 
-export function useScrollableDrag({ axis = "x", wheelToHorizontal = false } = {}) {
-  const containerRef = useRef(null);
-  const dragStateRef = useRef({
+type ScrollAxis = "x" | "y";
+
+type UseScrollableDragOptions = {
+  axis?: ScrollAxis;
+  wheelToHorizontal?: boolean;
+};
+
+type DragState = {
+  isDragging: boolean;
+  startX: number;
+  startY: number;
+  startScrollLeft: number;
+  startScrollTop: number;
+};
+
+type ScrollableDragHandlers = {
+  onMouseDown: MouseEventHandler<HTMLDivElement>;
+  onMouseMove: MouseEventHandler<HTMLDivElement>;
+  onMouseUp: MouseEventHandler<HTMLDivElement>;
+  onMouseLeave: MouseEventHandler<HTMLDivElement>;
+  onWheel: WheelEventHandler<HTMLDivElement>;
+};
+
+export function useScrollableDrag({ axis = "x", wheelToHorizontal = false }: UseScrollableDragOptions = {}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const dragStateRef = useRef<DragState>({
     isDragging: false,
     startX: 0,
     startY: 0,
@@ -10,8 +33,8 @@ export function useScrollableDrag({ axis = "x", wheelToHorizontal = false } = {}
     startScrollTop: 0,
   });
 
-  const handlers = useMemo(() => {
-    const handleMouseDown = (event) => {
+  const handlers = useMemo<ScrollableDragHandlers>(() => {
+    const handleMouseDown: MouseEventHandler<HTMLDivElement> = (event) => {
       if (event.button !== 0) return;
 
       const container = containerRef.current;
@@ -28,7 +51,7 @@ export function useScrollableDrag({ axis = "x", wheelToHorizontal = false } = {}
       container.classList.add("is-dragging");
     };
 
-    const handleMouseMove = (event) => {
+    const handleMouseMove: MouseEventHandler<HTMLDivElement> = (event) => {
       const container = containerRef.current;
       if (!container || !dragStateRef.current.isDragging) return;
 
@@ -42,7 +65,7 @@ export function useScrollableDrag({ axis = "x", wheelToHorizontal = false } = {}
       }
     };
 
-    const stopDragging = () => {
+    const stopDragging = (): void => {
       const container = containerRef.current;
       dragStateRef.current.isDragging = false;
 
@@ -51,12 +74,12 @@ export function useScrollableDrag({ axis = "x", wheelToHorizontal = false } = {}
       }
     };
 
-    const handleMouseLeave = () => {
+    const handleMouseLeave: MouseEventHandler<HTMLDivElement> = () => {
       if (!dragStateRef.current.isDragging) return;
       stopDragging();
     };
 
-    const handleWheel = (event) => {
+    const handleWheel: WheelEventHandler<HTMLDivElement> = (event) => {
       const container = containerRef.current;
       if (!container) return;
 

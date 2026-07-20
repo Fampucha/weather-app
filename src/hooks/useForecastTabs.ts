@@ -1,19 +1,18 @@
 import { useMemo, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import type { WeatherApiForecastDay } from "../types";
 
-type UseForecastTabsResult = {
+type UseForecastTabsResult<T> = {
   daysCount: number;
   setDaysCount: Dispatch<SetStateAction<number>>;
   activeDay: number;
   setActiveDay: (nextDay: SetStateAction<number>) => void;
-  visibleDays: WeatherApiForecastDay[];
+  visibleDays: T[];
 };
 
-export function useForecastTabs(
-  days: WeatherApiForecastDay[]
-): UseForecastTabsResult {
-  const [daysCount, setDaysCount] = useState<number>(5);
-  const [activeDayState, setActiveDayState] = useState<number>(0);
+export function useForecastTabs<T>(
+  days: T[]
+): UseForecastTabsResult<T> {
+  const [daysCount, setDaysCount] = useState(5);
+  const [activeDayState, setActiveDayState] = useState(0);
 
   const visibleDays = useMemo(() => {
     return days.slice(0, daysCount);
