@@ -9,6 +9,7 @@ import { useClock } from "./hooks/useClock";
 import { useWeatherTheme } from "./hooks/useWeatherTheme";
 import { useForecastTabs } from "./hooks/useForecastTabs";
 import { useFormattedDateTime } from "./hooks/useFormattedDateTime";
+
 import { getClosestHourIndex } from "./utils/getClosestHourIndex";
 
 function App() {
@@ -26,8 +27,8 @@ function App() {
   const nowTick = useClock();
 
   const days = useMemo(() => {
-    return weatherData?.forecast?.forecastday || [];
-  }, [weatherData]);
+    return weatherData?.forecast.forecastday ?? [];
+  }, [weatherData?.forecast.forecastday]);
 
   const {
     activeDay,
@@ -37,38 +38,37 @@ function App() {
     setDaysCount
   } = useForecastTabs(days);
 
-  const [activeHourIndex, setActiveHourIndex] = useState(0);
+  const [activeHourIndex, setActiveHourIndex] = useState<number>(0);
+
+  const selectedDay = visibleDays[activeDay];
+  const selectedHours = selectedDay?.hour ?? [];
 
   const autoTodayHourIndex = useMemo(() => {
-    const selectedDay = visibleDays[activeDay];
-    if (!selectedDay?.hour?.length) return 0;
+    if (!selectedHours.length) return 0;
     if (activeDay !== 0) return 0;
-    if (!weatherData?.location?.localtime_epoch) return 0;
+
+    const localtimeEpoch = weatherData?.location.localtime_epoch;
+    if (localtimeEpoch === undefined) return 0;
 
     return getClosestHourIndex(
-      selectedDay.hour,
-      weatherData.location.localtime_epoch
+      selectedHours,
+      localtimeEpoch
     );
-  }, [visibleDays, activeDay, weatherData]);
-
+  }, [selectedHours, activeDay, weatherData?.location.localtime_epoch]);
 
   const effectiveActiveHourIndex =
     activeDay === 0 && activeHourIndex === 0
       ? autoTodayHourIndex
       : activeHourIndex;
   const currentHourData =
-     visibleDays[activeDay]?.hour?.[effectiveActiveHourIndex];
+     selectedHours[effectiveActiveHourIndex];
 
-  const {
-    theme,
-    label,
-    isDay
-  } = useWeatherTheme(currentHourData);
+  const { theme, label, isDay } = useWeatherTheme(currentHourData);
 
   const { formattedDate, formattedTime } =
   useFormattedDateTime(currentHourData, nowTick, weatherData);
 
-  const handleActiveDayChange = (dayIndex) => {
+  const handleActiveDayChange = (dayIndex: number): void => {
     setActiveDay(dayIndex);
     setActiveHourIndex(0);
   };
@@ -76,61 +76,55 @@ function App() {
   return (
     <div
       className={`app app-shell ${isDay ? "day" : "night"}`}
-      style={{
-        background: theme
-          ? `url(${theme[isDay ? 'day' : 'night']?.background}) center/cover no-repeat`
-          : "#000",
-      }}
+      style={{background: `url(${theme[isDay ? 'day' : 'night']?.background}) center/cover no-repeat`}}
     >
       {loading && <p>Loading...</p>}
-      {error && <p>Something went wrong...</p>}
+      {error && <p>{error}</p>}
 
       {!loading && weatherData && days.length > 0 && (
-        <>
-          <div className="app-content">
+        <div className="app-content">
+          <div className="app-main">
+            <div className="app-datetime">
+              <span className="app-date">{formattedDate}</span>
+              <span className="app-divider" />
+              <span className="app-time">{formattedTime}</span>
+            </div>
 
-            <div className="app-main">
-              <div className="app-datetime">
-                <span className="app-date">{formattedDate}</span>
-                <span className="app-divider"></span>
-                <span className="app-time">{formattedTime}</span>
-              </div>
+            <div className="app-mobile-search">
+              <SidebarTopContent
+                city={`${weatherData.location.name}, ${weatherData.location.country}`}
+                data={currentHourData}
+                setQuery={setQuery}
+                query={query}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                suggestions={suggestions}
+                showCurrent={false}
+              />
+            </div>
 
-              <div className="app-mobile-search">
-                <SidebarTopContent
-                  city={`${weatherData.location.name}, ${weatherData.location.country}`}
-                  data={currentHourData}
-                  setQuery={setQuery}
-                  query={query}
-                  inputValue={inputValue}
-                  setInputValue={setInputValue}
-                  suggestions={suggestions}
-                  showCurrent={false}
-                />
-              </div>
-
-              <div className="app-mobile-current">
-                <SidebarTopContent
-                  city={`${weatherData.location.name}, ${weatherData.location.country}`}
-                  data={currentHourData}
-                  setQuery={setQuery}
-                  query={query}
-                  inputValue={inputValue}
-                  setInputValue={setInputValue}
-                  suggestions={suggestions}
-                  showSearch={false}
-                />
-              </div>
+            <div className="app-mobile-current">
+              <SidebarTopContent
+                city={`${weatherData.location.name}, ${weatherData.location.country}`}
+                data={currentHourData}
+                setQuery={setQuery}
+                query={query}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                suggestions={suggestions}
+                showSearch={false}
+              />
+            </div>
 
               <div className="app-info">
                 <h1 className="app-title">
                   {label}
                 </h1>
 
-                <span className="hourly-divider"></span>
+                <span className="hourly-divider" />
 
                 <HourlyForecast
-                  hours={visibleDays[activeDay]?.hour}
+                  hours={selectedHours}
                   activeHourIndex={effectiveActiveHourIndex}
                   setActiveHourIndex={setActiveHourIndex}
                 />
@@ -153,7 +147,6 @@ function App() {
               suggestions={suggestions}
             />
           </div>
-        </>
       )}
     </div>
   );

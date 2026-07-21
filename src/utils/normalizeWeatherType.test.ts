@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { normalizeWeatherType } from './normalizeWeatherType';
 
 describe('normalizeWeatherType', () => {
@@ -22,6 +22,6 @@ describe('normalizeWeatherType', () => {
   });
 
   it('returns clouds as default fallback', () => {
-    expect(normalizeWeatherType(null, 'some weird weather')).toBe('clouds');
+    expect(normalizeWeatherType(null, 'some weird weather')).toBe('Clouds');
   });
 });

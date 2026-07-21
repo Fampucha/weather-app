@@ -1,19 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import { resolveWeatherIcon } from "../../utils/resolveWeatherIcon";
 import { useScrollableDrag } from "../../utils/useScrollableDrag";
 import clearDay from "../../assets/icons/weather/clear-day.svg";
 import clearNight from "../../assets/icons/weather/clear-night.svg";
+import type { WeatherApiForecastHour } from "../../types";
+
+type HourlyForecastProps = {
+  hours: WeatherApiForecastHour[];
+  activeHourIndex: number;
+  setActiveHourIndex: Dispatch<SetStateAction<number>>;
+};
 
 function HourlyForecast({
   hours,
   activeHourIndex,
   setActiveHourIndex,
-}) {
+}: HourlyForecastProps) {
   const { containerRef, handlers } = useScrollableDrag({
     axis: "x",
     wheelToHorizontal: true,
   });
-  const cardRefs = useRef([]);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -28,7 +35,7 @@ function HourlyForecast({
     });
   }, [activeHourIndex, hours, containerRef]);
 
-  if (!hours?.length) return null;
+  if (!hours.length) return null;
 
   return (
     <div
@@ -37,17 +44,17 @@ function HourlyForecast({
       {...handlers}
     >
       {hours.map((item, index) => {
-        const hour = new Date(item.time).toLocaleTimeString([], { hour: "2-digit" });
-        const conditionCode = Number(item.condition.code);
-        const conditionText = String(item.condition.text ?? "");
+        const hour = new Date(item.time).toLocaleTimeString([], { hour: "2-digit", hour12: false });
+        const conditionCode = item.condition.code;
+        const conditionText = item.condition.text;
+        const isHourDay = item.is_day === 1;
 
         const { weatherType, icon: resolvedIcon } = resolveWeatherIcon({
           code: conditionCode,
           text: conditionText,
-          isDay: String(item.is_day) === "1",
+          isDay: isHourDay,
         });
 
-        const isHourDay = String(item.is_day) === "1";
         const isClearCondition =
           conditionCode === 1000 || /^(clear|sunny)$/i.test(conditionText);
 

@@ -1,4 +1,4 @@
-export const isDayTime = (dt, timezone) => {
+export const isDayTime = (dt: number, timezone: number): boolean => {
   const localTime = new Date((dt + timezone) * 1000);
   const hour = localTime.getUTCHours();
 

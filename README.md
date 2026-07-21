@@ -2,27 +2,36 @@
 
 ## About The Project
 
-Weather Forecast App is a responsive React application that provides real-time weather data, hourly forecasts, and multi-day predictions using WeatherAPI.com.
+Weather Forecast App is a responsive weather application built with React, TypeScript, Vite, and SCSS. It provides current weather data, hourly forecasts, and multi-day weather predictions using WeatherAPI.com.
 
-The project focuses on component-based architecture, custom React hooks, dynamic theming, and responsive UI development using React and SCSS.
+The project focuses on type-safe development, component-based architecture, custom React hooks, dynamic weather-based theming, API data processing, and responsive UI development.
+
+---
+
+## Live Demo
+
+[View Live Demo](LIVE_DEMO_URL)
+
+> Due to the current WeatherAPI.com plan limitations, the live demo provides a forecast for up to 3 days.
 
 ---
 
 ## Tech Stack
 
 * React
+* TypeScript
 * Vite
 * SCSS (Sass)
 * Vitest (unit testing)
-* Weather API (WeatherAPI.com)
+* WeatherAPI.com
 
 ## Technical Highlights
 
-* Component-based React architecture
-* Custom React hooks for state and logic separation
-* Dynamic weather-based theming system
-* Responsive SCSS architecture
-* API integration with asynchronous data handling
+* React application written with TypeScript
+* Type-safe integration with WeatherAPI.com
+* Custom React hooks for separating data, state, and UI logic
+* Configuration-based dynamic weather theming
+* Synchronized hourly and daily forecast navigation
 * Unit testing with Vitest
 
 ---
@@ -30,11 +39,27 @@ The project focuses on component-based architecture, custom React hooks, dynamic
 ## Key Features
 
 * Shows current weather and hourly forecast for the selected city.
-* Shows multi-day forecast with tabs (`5 / 10 / 14 days`).
+* Supports forecast tabs for `5`, `10`, and `14` days, depending on the available WeatherAPI.com plan.
 * Supports city search with suggestions.
-* Updates local time based on the selected location timezone.
+* Updates local time based on the selected location's timezone.
 * Dynamically changes visual theme/background based on weather condition and day/night.
+* Keeps hourly and daily forecast sections synchronized with the selected day.
 * Includes responsive layouts for desktop and mobile.
+
+---
+
+## TypeScript Migration
+
+The application was initially built with JavaScript and later fully migrated to TypeScript.
+
+The migration included:
+
+* typing WeatherAPI.com responses;
+* adding types for component props, hooks, and utility functions;
+* converting `.js` and `.jsx` files to `.ts` and `.tsx`;
+* migrating unit tests to TypeScript.
+
+This improved type safety, code maintainability, editor support, and refactoring reliability.
 
 ---
 
@@ -45,25 +70,32 @@ The project focuses on component-based architecture, custom React hooks, dynamic
 
 ## Run Locally
 
-1. Install dependencies:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Fampucha/weather-app
+cd weather-app
+```
+
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Create a `.env` file in the project root and add:
+3. Create a `.env` file in the project root and add:
 
 ```env
 VITE_WEATHER_API_KEY=your_api_key_here
 ```
 
-3. Start development server:
+4. Start development server:
 
 ```bash
 npm run dev
 ```
 
-4. Optional checks:
+5. Optional checks:
 
 ```bash
 npm run lint
@@ -73,7 +105,7 @@ npm run preview
 
 ## Testing
 
-The project includes basic unit tests using Vitest.
+The project includes unit tests written with Vitest and TypeScript.
 
 Tested parts:
 * utility functions (weather normalization, time calculations)
@@ -90,27 +122,42 @@ npm run test
 
 ## Technical Implementation
 
-### UI structure
+### UI Structure
 
-* `App.jsx` orchestrates page composition and passes data to feature components.
+* `App.tsx` orchestrates page composition and passes data to feature components.
 * Weather UI is split into focused components:
   * `SidebarTopContent` (search + current metrics)
   * `HourlyForecast` (hourly cards)
   * `Sidebar` + `DailyList` (next-days forecast)
 
-### Data and state hooks
+### Data and State Hooks
 
 * `useWeather` handles API requests, loading/error states, city input, and suggestions.
 * `useClock` provides ticking time for location-aware clock rendering.
 * `useForecastTabs` controls forecast range and active day.
 * `useWeatherTheme` derives theme + weather label + day/night mode from active weather data.
 
-### Utility-first weather logic
+### Type Organization
 
-* Mapping and normalization are moved into `utils/*` and `constants/weatherThemes.js`.
+Weather-related TypeScript interfaces and types are stored separately from the UI components.
+
+They describe:
+
+* current weather data;
+* forecast days;
+* hourly forecast items;
+* locations and timezones;
+* API responses;
+* normalized internal weather types.
+
+This keeps external API data structures explicit and helps prevent accidental access to missing or incorrectly typed properties.
+
+### Utility-First Weather Logic
+
+* Mapping and normalization are moved into `utils/*` and `constants/weatherThemes.ts`.
 * This keeps rendering components smaller and easier to maintain.
 
-### Styling strategy
+### Styling Strategy
 
 * SCSS is split by concern:
   * `styles/abstracts` (variables, mixins)
@@ -122,34 +169,29 @@ npm run test
 
 ## Screenshots
 
-### Desktop view
+### Desktop View
 ![Desktop view](./readme-assets/desktop-main.jpg)
 
-### Mobile view
+### Mobile View
 ![Mobile view](./readme-assets/mobile-main.jpg)
 
-### Themes day/night
+### Themes Day/Night
 ![Themes day/night](./readme-assets/themes.jpg)
 
 ### Hourly forecast
 ![Hourly forecast](./readme-assets/hourly-forecast.jpg)
 
-### Daily forecast
+### Daily Forecast
 ![Daily forecast](./readme-assets/daily-forecast.jpg)
 
 ---
 
 ## Architecture Notes
 
-* **State-driven UI architecture**
-  * UI is derived from a minimal set of state variables (`weatherData`, `activeDay`, `activeHour`).
-  * Forecast navigation updates both hourly and sidebar data, keeping all sections synchronized.
+### State-Driven Interface
 
-* **Weather data processing & theming**
-  * API weather conditions are normalized into a limited internal set (`rain`, `cloudy`, `clear`, etc.).
-  * A configuration-based theme system maps weather types to UI variants (day/night).
-  * Business logic is separated from UI via hooks and utility functions.
+The UI is derived from a minimal set of state values. Changing the selected forecast day synchronizes the hourly forecast, daily list, and sidebar weather information.
 
-* **Progressive enhancement approach**
-  * Core functionality (data fetching + rendering) was implemented first.
-  * Visual enhancements (glass UI, transitions, dynamic backgrounds) were layered on top afterward.
+### Weather Processing and Theming
+
+WeatherAPI.com conditions are normalized into a limited internal set such as `rain`, `cloudy`, and `clear`. These normalized values are used by a configuration-based system to select the appropriate day or night visual theme.

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { resolveWeatherTheme } from './resolveWeatherTheme';
 import { weatherThemes } from '../constants/weatherThemes';
 
@@ -24,13 +24,13 @@ describe('resolveWeatherTheme', () => {
   });
 
   it('falls back to text when code is unknown', () => {
-    const result = resolveWeatherTheme({ code: null, text: 'Sunny sky' });
+    const result = resolveWeatherTheme({ code: 9999, text: 'Sunny sky' });
 
     expect(result.themeKey).toBe('clear');
   });
 
     it('falls back to cloudy when type is unknown', () => {
-    const result = resolveWeatherTheme({ code: null, text: 'unknown weather type' });
+    const result = resolveWeatherTheme({ code: 9999, text: 'unknown weather type' });
 
     expect(result.themeKey).toBe('cloudy');
     expect(result.theme).toBe(weatherThemes.cloudy);
