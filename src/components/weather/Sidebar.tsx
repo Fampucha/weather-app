@@ -9,7 +9,7 @@ type SidebarProps = {
   data: WeatherApiCurrent | null;
   days: WeatherApiForecastDay[];
   activeDay: number;
-  setActiveDay: (nextDay: SetStateAction<number>) => void;
+  setActiveDay: (dayIndex: number) => void;
   isDay: boolean;
   daysCount: number;
   setDaysCount: Dispatch<SetStateAction<number>>;

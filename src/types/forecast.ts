@@ -11,75 +11,19 @@ export type WeatherApiForecastHour = {
   condition: WeatherApiCondition;
   wind_kph: number;
   wind_degree: number;
-  // temp_f: number;
-  // wind_mph: number;
-  // wind_dir: string;
-  // pressure_mb: number;
-  // pressure_in: number;
-  // precip_mm: number;
-  // precip_in: number;
-  // snow_cm: number;
-  // humidity: number;
-  // cloud: number;
-  // feelslike_c: number;
-  // feelslike_f: number;
-  // windchill_c: number;
-  // windchill_f: number;
-  // heatindex_c: number;
-  // heatindex_f: number;
-  // dewpoint_c: number;
-  // dewpoint_f: number;
-  // will_it_rain: number;
-  // chance_of_rain: number;
-  // will_it_snow: number;
-  // chance_of_snow: number;
-  // vis_km: number;
-  // vis_miles: number;
-  // gust_mph: number;
-  // gust_kph: number;
-  // uv: number;
 };
 
 export type WeatherApiForecastDaySummary = {
   maxtemp_c: number;
   mintemp_c: number;
   condition: WeatherApiCondition;
-  // maxtemp_f: number;
-  // mintemp_f: number;
-  // avgtemp_c: number;
-  // avgtemp_f: number;
-  // maxwind_mph: number;
-  // maxwind_kph: number;
-  // totalprecip_mm: number;
-  // totalprecip_in: number;
-  // totalsnow_cm: number;
-  // avgvis_km: number;
-  // avgvis_miles: number;
-  // avghumidity: number;
-  // daily_will_it_rain: number;
-  // daily_chance_of_rain: number;
-  // daily_will_it_snow: number;
-  // daily_chance_of_snow: number;
-  // uv: number;
 };
-
-// export type WeatherApiForecastAstro = {
-//   sunrise: string;
-//   sunset: string;
-//   moonrise: string;
-//   moonset: string;
-//   moon_phase: string;
-//   moon_illumination: number;
-//   is_moon_up: number;
-//   is_sun_up: number;
-// };
 
 export type WeatherApiForecastDay = {
   date: string;
   day: WeatherApiForecastDaySummary;
   hour: WeatherApiForecastHour[];
   date_epoch: number;
-  // astro: WeatherApiForecastAstro;
 };
 
 export type WeatherApiForecast = {
@@ -89,5 +33,4 @@ export type WeatherApiForecast = {
 export type WeatherApiForecastResponse = {
   location: WeatherApiLocation;
   forecast: WeatherApiForecast;
-  // current: WeatherApiCurrent;
 };

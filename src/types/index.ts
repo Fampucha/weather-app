@@ -16,7 +16,3 @@ export type {
   WeatherApiForecastHour,
   WeatherApiForecastResponse,
 } from "./forecast";
-
-// export type {
-//   WeatherApiForecastAstro,
-// } from "./forecast";

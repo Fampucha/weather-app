@@ -5,7 +5,7 @@ import type { WeatherApiForecastDay } from "../../types";
 type DailyListProps = {
   days: WeatherApiForecastDay[];
   activeDay: number;
-  setActiveDay: Dispatch<SetStateAction<number>>;
+  setActiveDay: (dayIndex: number) => void;
   isDay: boolean;
 };
 
