@@ -22,6 +22,6 @@ describe('normalizeWeatherType', () => {
   });
 
   it('returns clouds as default fallback', () => {
-    expect(normalizeWeatherType(null, 'some weird weather')).toBe('clouds');
+    expect(normalizeWeatherType(null, 'some weird weather')).toBe('Clouds');
   });
 });
