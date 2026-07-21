@@ -10,7 +10,7 @@ The project focuses on type-safe development, component-based architecture, cust
 
 ## Live Demo
 
-[View Live Demo](LIVE_DEMO_URL)
+[View Live Demo](https://fampucha.github.io/weather-app/)
 
 > Due to the current WeatherAPI.com plan limitations, the live demo provides a forecast for up to 3 days.
 
